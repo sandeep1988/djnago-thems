@@ -7,7 +7,7 @@ from django.contrib import admin
 
 urlpatterns = patterns('',
     # Examples:
-    # url(r'^$', 'HelloWorld.views.home', name='home'),
+    url(r'^$', 'products.views.product_list', name='product_list'),
     # url(r'^blog/', include('blog.urls')),
     url(r'^admin/', include(admin.site.urls)),
     #url(r'products/$', foo),

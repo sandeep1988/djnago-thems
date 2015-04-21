@@ -83,7 +83,20 @@ DATABASES = {
     }
 }
 
+PROJECT_DIR  = os.path.dirname(__file__)
+MEDIA_ROOT = os.path.join(PROJECT_DIR, 'media')
 
+MEDIA_URL = '/media/'
+
+STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
+
+STATIC_URL = '/static/'
+STATIC_ROOT = 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+
+STATICFILES_DIRS = (
+    os.path.join(PROJECT_DIR, 'static'),
+)
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
