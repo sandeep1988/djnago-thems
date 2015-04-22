@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.forms import ModelForm
-
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from products.models import Product
+from django.db.models import Q
 
 class ProductForm(ModelForm):
     class Meta:
@@ -9,9 +10,15 @@ class ProductForm(ModelForm):
         fields = "__all__"
 
 def product_list(request, template_name='products/product_list.html'):
-    if request.POST:
-        keyword = request.POST['term']
-        products = Product.objects.filter(name__contains = keyword)
+    query = request.POST.get('term', '')
+    if query:
+        #keyword = request.POST['term']
+        qset = (
+            Q(name__icontains=query) |
+            Q(price__icontains=query) |
+            Q(Quantity__icontains=query)
+        )
+        products = Product.objects.filter(qset).distinct()
         data = {}
         data['object_list'] = products
         return render(request, template_name, data)
