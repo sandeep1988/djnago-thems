@@ -10,7 +10,6 @@ urlpatterns = patterns('',
     url(r'^$', 'products.views.product_list', name='product_list'),
     # url(r'^blog/', include('blog.urls')),
     url(r'^admin/', include(admin.site.urls)),
-    #url(r'products/$', foo),
     url(r'^products/', include('products.urls')),
     url(r'^categories/', include('categories.urls')),
 )

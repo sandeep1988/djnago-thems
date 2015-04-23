@@ -2,7 +2,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.forms import ModelForm
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from products.models import Product
+from django.http import HttpResponse
 from django.db.models import Q
+from django.http import HttpResponseBadRequest
+import json
+from django.core import serializers
+from django.shortcuts import render_to_response
 
 class ProductForm(ModelForm):
     class Meta:
@@ -30,9 +35,13 @@ def product_list(request, template_name='products/product_list.html'):
 
 def product_create(request, template_name='products/product_form.html'):
     form = ProductForm(request.POST or None)
-    if form.is_valid():
-        form.save()
-        return redirect('/')
+    if request.is_ajax() or request.method == 'POST':
+        if form.is_valid():
+            form.save()
+            data = {}
+            data['something'] = Product.objects.all().last().id
+            return HttpResponse(json.dumps(data), content_type = "application/json")
+            #import pdb; pdb.set_trace()
     return render(request, template_name, {'form':form})
 
 def product_update(request, pk, template_name='products/product_form.html'):
@@ -43,9 +52,15 @@ def product_update(request, pk, template_name='products/product_form.html'):
         return redirect('/')
     return render(request, template_name, {'form':form})
 
-def product_delete(request, pk, template_name='products/product_confirm_delete.html'):
-    product = get_object_or_404(Product, pk=pk)    
-    if request.method=='POST':
+def product_delete(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    if request.is_ajax() or request.method == 'GET':
+        data = {}
+        data['something'] = product.id
         product.delete()
-        return redirect('/')
-    return render(request, template_name, {'object':product})
+        return HttpResponse(json.dumps(data), content_type = "application/json")
+    return render(request, {'object':product})
+
+
+
+
