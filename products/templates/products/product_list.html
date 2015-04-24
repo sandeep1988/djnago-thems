@@ -15,9 +15,9 @@
     <script type="text/javascript" href="{% static 'js/product.js"></script>
     {% for product in object_list %}
     <tr id="row_{{ product.id }}">
-        <td><a href="{% url "product_edit" product.id %}">{{ product.name }} </a></td>
-        <td>{{ product.price }}</td>
-        <td>{{ product.Quantity }}</td>
+        <td><a href="{% url "product_edit" product.id %}", class="edit-button" edit-id="{{ product.id }}" >{{ product.name }} </a></td>
+        <td id= "row_price_{{product.price}}">{{ product.price }}</td>
+        <td id= "row_quantity_{{product.Quantity}}">{{ product.Quantity }}</td>
 
     <td><a href="{% url 'product_delete' product.id %}", class="delete-button" delete-id="{{ product.id }}" >delete</a></td>
     </tr>
@@ -54,7 +54,7 @@ $(document).ready(function() {
         });
         });
 });
-    $('.delete-button').click(function(e){
+    $('.delete-button').click(function(e) {
         e.preventDefault();
         deleted_id = $(this).attr('delete-id');
         $.ajax({
@@ -69,8 +69,29 @@ $(document).ready(function() {
                 prodId = response.something;
                 console.log("everything worked!")
                 $("#row_"+deleted_id).remove();
-                }
+            }
         });
+    });
+
+    $('.edit-button').click(function(e) {
+        e.preventDefault();
+        edit_id = $(this).attr('edit-id');
+        $('#show-frm').load("http://localhost:8000/products/edit/"+edit_id);
+        $("#add-product-form").live("submit", function(e){
+            var serializedData = $(this).serialize();
+        $.ajax({
+            type: "POST",
+            url: "/products/edit/"+edit_id,
+            dataType: "html",
+            data: serializedData,
+            success: function(response) {
+                console.log(response);
+                console.log(edit_id);
+                $("#row_"+edit_id).replaceWith(response);
+                $("#add-product-form")[0].reset();
+            }
+        });
+    });
     });
 
 });

@@ -47,16 +47,18 @@ def product_create(request, template_name='products/product_form.html'):
 def product_update(request, pk, template_name='products/product_form.html'):
     product = get_object_or_404(Product, pk=pk)
     form = ProductForm(request.POST or None, instance=product)
-    if form.is_valid():
-        form.save()
-        return redirect('/')
+    if request.is_ajax() or request.method == 'POST':
+        if form.is_valid():
+            form.save()
+            data = '<tr id="row_'+str(product.id)+'"><td><a href="/products/edit/'+str(product.id)+'"> '+product.name+' </a></td><td> '+str(product.price)+' </td> <td> '+str(product.Quantity)+'</td><td><a delete-id="'+str(product.id)+'" href="/products/delete/'+str(product.id)+'", class="delete-button" >delete</a></td></tr>'
+            return HttpResponse(data, content_type = "application/html")
     return render(request, template_name, {'form':form})
 
 def product_delete(request, pk):
     product = get_object_or_404(Product, pk=pk)
-    if request.is_ajax() or request.method == 'GET':
+    if request.is_ajax() or request.method == 'POST':
         data = {}
-        data['something'] = product.id
+        data['something'] = product.name
         product.delete()
         return HttpResponse(json.dumps(data), content_type = "application/json")
     return render(request, {'object':product})
