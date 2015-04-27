@@ -1,6 +1,6 @@
 <h1>Products</h1>
 <form action="/" method="post">
-    <!-- {% csrf_token %} -->
+    {% csrf_token %}
 <input type="text" name="term" size="30"> <input type="submit" value="Search">
 </form>
 <table id ="tab-list">
@@ -83,7 +83,10 @@ $(document).ready(function() {
             type: "POST",
             url: "/products/edit/"+edit_id,
             dataType: "html",
-            data: serializedData,
+            data: { 
+                serializedData,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
             success: function(response) {
                 console.log(response);
                 console.log(edit_id);
