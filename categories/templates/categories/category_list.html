@@ -1,11 +1,85 @@
 <h1>Category</h1>
-<ul>
+<table id ="cat-tab-list">
+	<tr>
+    	<th>Name</th>
+    	<th colspan="3"></th>
+  	</tr>
+	{% load static %}
+	<link rel="stylesheet" href="{% static 'css/style.css' %}">
     {% for category in object_list %}
-    <li>{{ category.name }}  :  
-    <a href="{% url "category_edit" category.id %}">{{ category.name }}</a>
-    <a href="{% url "category_delete" category.id %}">delete</a>
-    </li>
+    <tr id="row_cat_{{ category.id }}">
+    	<td>
+    		<a href="{% url "category_edit" category.id %}" class = "edit-category-button"  edit-cat-id="{{category.id}}">{{ category.name }}</a>
+		</td>
+    	<td>
+    		<a href="{% url "category_delete" category.id %}" class = "delete-category-button"  delete-cat-id="{{category.id}}">delete</a>
+   		</td>
+   	</tr>
     {% endfor %}
-</ul>
+</table>
+<a href="{% url "category_new" %}" class="new-cat-button">New</a>
+<div id = "cat-show-frm">
+</div>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
 
-<a href="{% url "category_new" %}">New</a>
+<script type="text/javascript">
+$(document).ready(function() { 
+    $('.delete-category-button').click(function(e) {
+        e.preventDefault();
+        deleted_cat_id = $(this).attr('delete-cat-id');
+        $.ajax({
+            type: "GET",
+            url: $(this).attr('href'),
+            dataType: "json",
+            success: function(response) {
+                console.log("#row_cat_"+deleted_cat_id);
+                console.log("everything worked!")
+            	$("#row_cat_"+deleted_cat_id).remove();
+            }
+        });
+    });
+
+    $('.new-cat-button').click(function(e) {
+    	e.preventDefault();
+    	$('#cat-show-frm').load("http://localhost:8000/categories/new");
+    	$("#add-category-form").live("submit", function(){
+    		var serializedData = $(this).serialize();
+    	$.ajax({
+    		type: "POST",
+            url: "/categories/new",
+            data: serializedData,
+            dataType: "json",
+            success: function(response) {
+            	console.log(response.something);
+            	prodId = response.something;
+            	$("#cat-tab-list").find('tbody').append('<tr id="row_'+prodId+'"><td><a href="/categories/edit/'+prodId+'"> '+$("#add-category-form").find("#id_name").val()+' </a></td> <td><a delete-id="'+prodId+'" href="/categories/delete/'+prodId+'", class="delete-category-button" >delete</a></td></tr>');
+            	$('#add-category-form')[0].reset();
+            }
+        });
+    	});
+    });
+
+    $('.edit-category-button').click(function(e) {
+    	e.preventDefault();
+    	edit_cat_id = $(this).attr('edit-cat-id');
+    	$('#cat-show-frm').load("http://localhost:8000/categories/edit/"+edit_cat_id);
+    	$("#add-category-form").live("submit", function(){
+    		var serializedData = $(this).serialize();
+    	$.ajax({
+    		type: "POST",
+    		url: "/categories/edit/"+edit_cat_id,
+    		data: serializedData,
+    		dataType: "json",
+    		success: function(response){
+    			console.log(response);
+    			console.log(edit_cat_id);
+    			$("#row_cat_"+edit_cat_id).replaceWith(response);
+    			$('#add-category-form').get(0).reset();
+    		}
+
+    	});
+    	});
+    });
+
+});
+</script>

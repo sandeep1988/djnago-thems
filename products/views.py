@@ -17,7 +17,6 @@ class ProductForm(ModelForm):
 def product_list(request, template_name='products/product_list.html'):
     query = request.POST.get('term', '')
     if query:
-        #keyword = request.POST['term']
         qset = (
             Q(name__icontains=query) |
             Q(price__icontains=query) |
@@ -41,7 +40,6 @@ def product_create(request, template_name='products/product_form.html'):
             data = {}
             data['something'] = Product.objects.all().last().id
             return HttpResponse(json.dumps(data), content_type = "application/json")
-            #import pdb; pdb.set_trace()
     return render(request, template_name, {'form':form})
 
 def product_update(request, pk, template_name='products/product_form.html'):
