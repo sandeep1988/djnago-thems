@@ -1,0 +1,17 @@
+<table id ="tab-list">
+    <tr>
+    <th>Name</th>
+    <th>Price</th>
+    <th>Quantity</th>
+    <th colspan="3"></th>
+  </tr>
+    {% for product in object_list %}
+    <tr id="row_{{ product.id }}">
+        <td><a href="{% url "product_edit" product.id %}", class="edit-button" edit-id="{{ product.id }}" >{{ product.name }} </a></td>
+        <td id= "row_price_{{product.price}}">{{ product.price }}</td>
+        <td id= "row_quantity_{{product.Quantity}}">{{ product.Quantity }}</td>
+
+    <td><a href="{% url 'product_delete' product.id %}", class="delete-button" delete-id="{{ product.id }}" >delete</a></td>
+    </tr>
+    {% endfor %}
+</table>
