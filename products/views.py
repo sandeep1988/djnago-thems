@@ -6,7 +6,10 @@ from django.http import HttpResponse
 from django.db.models import Q
 from django.http import HttpResponseBadRequest
 import json
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.core import serializers
+from django.template import RequestContext
 from django.shortcuts import render_to_response
 
 class ProductForm(ModelForm):
@@ -15,21 +18,9 @@ class ProductForm(ModelForm):
         fields = "__all__"
 
 def product_list(request, template_name='products/product_list.html'):
-    query = request.POST.get('term', '')
-    if query:
-        qset = (
-            Q(name__icontains=query) |
-            Q(price__icontains=query) |
-            Q(Quantity__icontains=query)
-        )
-        products = Product.objects.filter(qset).distinct()
-        data = {}
-        data['object_list'] = products
-        return render(request, template_name, data)
-    else:
-        products = Product.objects.all()
-        data = {}
-        data['object_list'] = products
+    products = Product.objects.all()
+    data = {}
+    data['object_list'] = products
     return render(request, template_name, data)
 
 def product_create(request, template_name='products/product_form.html'):
@@ -62,5 +53,21 @@ def product_delete(request, pk):
     return render(request, {'object':product})
 
 
-
+def product_list_data(request, template_name='products/product_list_data.html'):
+    query = request.POST.get('term')
+    if query:
+        qset = (
+            Q(name__icontains=query) |
+            Q(price__icontains=query) |
+            Q(Quantity__icontains=query)
+        )
+        products = Product.objects.filter(qset).distinct()
+        data = {}
+        data['object_list'] = products
+        return render(request, template_name, data)
+    else:
+        products = Product.objects.all()
+        data = {}
+        data['object_list'] = products
+    return render(request, template_name, data)
 
