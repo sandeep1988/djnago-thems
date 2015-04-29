@@ -99,13 +99,13 @@ $(document).ready(function() {
         });
     });
 
-    $("#next-page").live("click",function(){
-        next_page = $(this).attr("href");
+    $("#next-page,#previous-page").live("click",function(){
+        next_previous = $(this).attr("href");
         $.ajax({
             type: "POST",
             url: "/products/product_list_demo",
             data: {
-                   'term' :next_page
+                   'term' :next_previous
             },
             dataType: "html",
             success: function(response){
@@ -119,25 +119,6 @@ $(document).ready(function() {
         return false;
     })
 
-    $("#previous-page").live("click",function(){
-        previous_page = $(this).attr("href");
-        $.ajax({
-            type: "POST",
-            url: "/products/product_list_demo",
-            data: {
-                   'term' :previous_page
-            },
-            dataType: "html",
-            success: function(response){
-                $('.product-data').html(response);
-            },
-            error: function(error){
-                alert("Error");
-                return;
-            }
-        });
-        return false;
-    })
 
 });
 </script>
