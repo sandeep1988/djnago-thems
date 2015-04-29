@@ -38,6 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_static_jquery',
+    'template_debug',
     'products',
     'categories',
 )

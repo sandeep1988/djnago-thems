@@ -4,17 +4,15 @@
 <link rel="stylesheet" href="{% static 'css/style.css' %}">
 <script src="{% static 'js/product.js'%}"></script>
 <h1>Products</h1>
-<form action="/products/product_list" method="post">
+<form action="/products/product_list" method="post" id="searchfrm">
     {% csrf_token %}
-<input type="text" name="term" size="30" id= "search"> 
-<input type="button" value="Search" id="searchBtn">
+<input type="text" name="term" size="30" id= "search" placeholder="Search Product"> 
+<!-- <input type="button" value="Search" id="searchBtn"> -->
 </form>
 <div class="product-data">
 {% include "products/product_list_data.html" %}
 </div>
-
 <a href="{% url "product_new" %}", class="new-button">New</a>
-
 <div id="show-frm"></div>
 
 <script type="text/javascript">
@@ -80,7 +78,7 @@ $(document).ready(function() {
         });
     });
 
-    $('#searchBtn').click(function(e) {
+    $('#searchfrm').submit(function(e) {
         e.preventDefault();
         q = $('#search').val();
         $.ajax({
@@ -93,7 +91,6 @@ $(document).ready(function() {
             success: function(response) {
                 console.log(response);
                 $(".product-data").html(response);
-                $("#search")[0].reset();
             },
             error: function(error){
                 alert("error");
@@ -101,6 +98,46 @@ $(document).ready(function() {
             }
         });
     });
+
+    $("#next-page").live("click",function(){
+        next_page = $(this).attr("href");
+        $.ajax({
+            type: "POST",
+            url: "/products/product_list_demo",
+            data: {
+                   'term' :next_page
+            },
+            dataType: "html",
+            success: function(response){
+                $('.product-data').html(response);
+            },
+            error: function(error){
+                alert("Error");
+                return;
+            }
+        });
+        return false;
+    })
+
+    $("#previous-page").live("click",function(){
+        previous_page = $(this).attr("href");
+        $.ajax({
+            type: "POST",
+            url: "/products/product_list_demo",
+            data: {
+                   'term' :previous_page
+            },
+            dataType: "html",
+            success: function(response){
+                $('.product-data').html(response);
+            },
+            error: function(error){
+                alert("Error");
+                return;
+            }
+        });
+        return false;
+    })
 
 });
 </script>
