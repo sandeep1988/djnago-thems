@@ -1,41 +1,26 @@
-<h1>Products</h1>
-<form action="/" method="post">
-    {% csrf_token %}
-<input type="text" name="term" size="30"> <input type="submit" value="Search">
-</form>
-<table id ="tab-list">
-    <tr>
-    <th>Name</th>
-    <th>Price</th>
-    <th>Quantity</th>
-    <th colspan="3"></th>
-  </tr>
-	{% load static %}
-	<link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <script type="text/javascript" href="{% static 'js/product.js"></script>
-    {% for product in object_list %}
-    <tr id="row_{{ product.id }}">
-        <td><a href="{% url "product_edit" product.id %}", class="edit-button" edit-id="{{ product.id }}" >{{ product.name }} </a></td>
-        <td id= "row_price_{{product.price}}">{{ product.price }}</td>
-        <td id= "row_quantity_{{product.Quantity}}">{{ product.Quantity }}</td>
-
-    <td><a href="{% url 'product_delete' product.id %}", class="delete-button" delete-id="{{ product.id }}" >delete</a></td>
-    </tr>
-    {% endfor %}
-</ul>
-</table>
-<a href="{% url "product_new" %}", , class="new-button">New</a>
-
-<div id="show-frm">
-
-</div>
+<!-- <script type="text/javascript" href="{% static 'js/product.js}"%></script> -->
+{% load static %}
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<script src="{% static 'js/product.js'%}"></script>
+<h1>Products</h1>
+<form action="/products/product_list" method="post" id="searchfrm">
+    {% csrf_token %}
+<input type="text" name="term" size="30" id= "search" placeholder="Search Product"> 
+<!-- <input type="button" value="Search" id="searchBtn"> -->
+</form>
+<div class="product-data">
+{% include "products/product_list_data.html" %}
+</div>
+<a href="{% url "product_new" %}", class="new-button">New</a>
+<div id="show-frm"></div>
 
 <script type="text/javascript">
 $(document).ready(function() { 
     $('.new-button').click(function(e) {
         e.preventDefault();
-        $('#show-frm').load("http://localhost:8000/products/new");
+        var pathname = window.location.href;
+        $('#show-frm').load(pathname+"products/new");
         $("#add-product-form").live("submit", function(){
             var serializedData = $(this).serialize();
         $.ajax({
@@ -53,7 +38,7 @@ $(document).ready(function() {
             }
         });
         });
-});
+    });
     $('.delete-button').click(function(e) {
         e.preventDefault();
         deleted_id = $(this).attr('delete-id');
@@ -62,7 +47,7 @@ $(document).ready(function() {
             url: $(this).attr('href'),
             dataType: "json",
             data: {
-                   'csrfmiddlewaretoken':$( "#csrfmiddlewaretoken" ).val()
+                   'csrfmiddlewaretoken':$( "#csrfmiddlewaretoken").val()
             },
             success: function(response) {
                 console.log("#row_"+deleted_id);
@@ -72,30 +57,67 @@ $(document).ready(function() {
             }
         });
     });
-
     $('.edit-button').click(function(e) {
         e.preventDefault();
         edit_id = $(this).attr('edit-id');
-        $('#show-frm').load("http://localhost:8000/products/edit/"+edit_id);
+        var pathname = window.location.href;
+        $('#show-frm').load(pathname +"products/edit/"+edit_id);
         $("#add-product-form").live("submit", function(e){
             var serializedData = $(this).serialize();
+            $.ajax({
+                type: "POST",
+                url: "/products/edit/"+edit_id,
+                dataType: "html",
+                data: serializedData,
+                success: function(response) {
+                    console.log(response);
+                    console.log(edit_id);
+                    $("#row_"+edit_id).replaceWith(response);
+                    $("#add-product-form")[0].reset();
+                }
+            });
+        });
+    });
+    $('#searchfrm').submit(function(e) {
+        e.preventDefault();
+        q = $('#search').val();
         $.ajax({
-            type: "POST",
-            url: "/products/edit/"+edit_id,
-            dataType: "html",
-            data: { 
-                serializedData,
-                csrfmiddlewaretoken: '{{ csrf_token }}'
+            type: 'POST',
+            url: "/products/product_list_data",
+            data: {
+                   'term' :q
             },
+            dataType: "html",
             success: function(response) {
                 console.log(response);
-                console.log(edit_id);
-                $("#row_"+edit_id).replaceWith(response);
-                $("#add-product-form")[0].reset();
+                $(".product-data").html(response);
+            },
+            error: function(error){
+                alert("error");
+                return;
             }
         });
     });
-    });
-
+    $("#next-page,#previous-page").live("click",function(){
+        next_previous = $(this).attr("href");
+        q = $('#search').val();
+        $.ajax({
+            type: "POST",
+            url: "/products/product_list_data",
+            data: {
+                   'page' :next_previous,
+                   'term' :q
+            },
+            dataType: "html",
+            success: function(response){
+                $('.product-data').html(response);
+            },
+            error: function(error){
+                alert("Error");
+                return;
+            }
+        });
+        return false;
+    })
 });
 </script>

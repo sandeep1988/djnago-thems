@@ -2,6 +2,8 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from categories.models import Category
 import categories
+from django.template import RequestContext
+from django.views.decorators.csrf import csrf_protect
 
 class Product(models.Model):
     name = models.CharField(max_length=200)
