@@ -19,7 +19,8 @@
 $(document).ready(function() { 
     $('.new-button').click(function(e) {
         e.preventDefault();
-        $('#show-frm').load("http://localhost:8000/products/new");
+        var pathname = window.location.href;
+        $('#show-frm').load(pathname+"products/new");
         $("#add-product-form").live("submit", function(){
             var serializedData = $(this).serialize();
         $.ajax({
@@ -46,7 +47,7 @@ $(document).ready(function() {
             url: $(this).attr('href'),
             dataType: "json",
             data: {
-                   'csrfmiddlewaretoken':$( "#csrfmiddlewaretoken" ).val()
+                   'csrfmiddlewaretoken':$( "#csrfmiddlewaretoken").val()
             },
             success: function(response) {
                 console.log("#row_"+deleted_id);
@@ -60,7 +61,8 @@ $(document).ready(function() {
     $('.edit-button').click(function(e) {
         e.preventDefault();
         edit_id = $(this).attr('edit-id');
-        $('#show-frm').load("http://localhost:8000/products/edit/"+edit_id);
+        var pathname = window.location.href;
+        $('#show-frm').load(pathname +"products/edit/"+edit_id);
         $("#add-product-form").live("submit", function(e){
             var serializedData = $(this).serialize();
             $.ajax({
@@ -101,11 +103,13 @@ $(document).ready(function() {
 
     $("#next-page,#previous-page").live("click",function(){
         next_previous = $(this).attr("href");
+        q = $('#search').val();
         $.ajax({
             type: "POST",
-            url: "/products/product_list_demo",
+            url: "/products/product_list_data",
             data: {
-                   'term' :next_previous
+                   'page' :next_previous,
+                   'term' :q
             },
             dataType: "html",
             success: function(response){
@@ -118,7 +122,6 @@ $(document).ready(function() {
         });
         return false;
     })
-
 
 });
 </script>

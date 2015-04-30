@@ -18,11 +18,9 @@ class ProductForm(ModelForm):
         fields = "__all__"
 
 def product_list(request, template_name='products/product_list.html'):
-    #import pdb; pdb.set_trace()
     products = Product.objects.all()
-    paginator = Paginator(products, 4)
+    paginator = Paginator(products, 5)
     page = request.GET.get('page')
-    #import pdb; pdb.set_trace()
     try:
         contacts = paginator.page(page)
     except PageNotAnInteger:
@@ -61,10 +59,8 @@ def product_delete(request, pk):
         product.delete()
         return HttpResponse(json.dumps(data), content_type = "application/json")
     return render(request, {'object':product})
-
-
+    
 def product_list_data(request, template_name='products/product_list_data.html'):
-    #import pdb; pdb.set_trace()
     query = request.POST.get('term')
     if query:
         qset = (
@@ -73,8 +69,19 @@ def product_list_data(request, template_name='products/product_list_data.html'):
             Q(Quantity__icontains=query)
         )
         products = Product.objects.filter(qset).distinct()
-        paginator = Paginator(products, 4)
-        page = request.GET.get('page')
+        paginator = Paginator(products, 5)
+        page = request.POST.get('page')
+        try:
+            contacts = paginator.page(page)
+        except PageNotAnInteger:
+            contacts = paginator.page(1)
+        except EmptyPage:
+            contacts = paginator.page(paginator.num_pages)
+        return render(request, template_name, {"contacts": contacts, 'products': products })
+    else:
+        products = Product.objects.all()
+        paginator = Paginator(products, 5)
+        page = request.POST.get('page')
         try:
             contacts = paginator.page(page)
         except PageNotAnInteger:
@@ -84,31 +91,10 @@ def product_list_data(request, template_name='products/product_list_data.html'):
         data = {}
         data['object_list'] = products
         return render(request, template_name, {"contacts": contacts, 'products': products, 'data': data})
-    else:
-        products = Product.objects.all()
-        data = {}
-        data['object_list'] = products
-    return render(request, template_name, data)
-
-
-def product_list_page(request, template_name='products/product_list_data.html'):
-    #import pdb; pdb.set_trace()
-    products = Product.objects.all()
-    paginator = Paginator(products, 3)
-    page = request.GET.get('page')
-    try:
-        contacts = paginator.page(page)
-    except PageNotAnInteger:
-        contacts = paginator.page(1)
-    except EmptyPage:
-        contacts = paginator.page(paginator.num_pages)
-    # data = {}
-    # data['object_list'] = products
-    return render(request, template_name, {"contacts": contacts, 'products': products})
 
 def product_list_demo(request, template_name='products/product_list_data.html'):
     products = Product.objects.all()
-    paginator = Paginator(products, 4)
+    paginator = Paginator(products, 5)
     page = request.POST.get('term')
     try:
         contacts = paginator.page(page)
