@@ -1,5 +1,7 @@
+{% block content %}
 {% load static %}
-<script src="{% static 'js/product.js'%}"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<script type="text/javascript" src="{% static 'js/product.js'%}"></script>
 <table id ="tab-list">
     <tr>
     <th>Name</th>
@@ -17,7 +19,6 @@
     {% endfor %}
 </table>
 
-{% block content %}
 <div class="pagination">
     <span class="step-links">
         {% if contacts.has_previous %}

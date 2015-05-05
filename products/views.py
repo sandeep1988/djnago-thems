@@ -7,6 +7,7 @@ from django.db.models import Q
 from django.http import HttpResponseBadRequest
 import json
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.core import serializers
 from django.template import RequestContext
@@ -18,6 +19,7 @@ class ProductForm(ModelForm):
         fields = "__all__"
 
 def product_list(request, template_name='products/product_list.html'):
+    #import pdb; pdb.set_trace()
     products = Product.objects.all()
     paginator = Paginator(products, 5)
     page = request.GET.get('page')
@@ -61,7 +63,7 @@ def product_delete(request, pk):
     return render(request, {'object':product})
     
 def product_list_data(request, template_name='products/product_list_data.html'):
-    query = request.POST.get('term')
+    query = request.GET.get('term')
     if query:
         qset = (
             Q(name__icontains=query) |
@@ -69,8 +71,8 @@ def product_list_data(request, template_name='products/product_list_data.html'):
             Q(Quantity__icontains=query)
         )
         products = Product.objects.filter(qset).distinct()
-        paginator = Paginator(products, 5)
-        page = request.POST.get('page')
+        paginator = Paginator(products, 2)
+        page = request.GET.get('page')
         try:
             contacts = paginator.page(page)
         except PageNotAnInteger:
@@ -80,8 +82,8 @@ def product_list_data(request, template_name='products/product_list_data.html'):
         return render(request, template_name, {"contacts": contacts, 'products': products })
     else:
         products = Product.objects.all()
-        paginator = Paginator(products, 5)
-        page = request.POST.get('page')
+        paginator = Paginator(products, 2)
+        page = request.GET.get('page')
         try:
             contacts = paginator.page(page)
         except PageNotAnInteger:

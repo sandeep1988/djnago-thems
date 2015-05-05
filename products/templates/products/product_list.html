@@ -1,16 +1,16 @@
-<!-- <script type="text/javascript" href="{% static 'js/product.js}"%></script> -->
+{% extends 'products/base.html' %}
 {% load static %}
+{% block content %}
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
-<link rel="stylesheet" href="{% static 'css/style.css' %}">
-<script src="{% static 'js/product.js'%}"></script>
+<link rel="stylesheet" href="{% static 'css/style.css' %}"/>
+<script type="text/javascript" src="{% static 'js/product.js'%}"></script>
 <h1>Products</h1>
-<form action="/products/product_list" method="post" id="searchfrm">
-    {% csrf_token %}
+<form action="/products/product_list_data" method="post" id="searchfrm">{% csrf_token %}
 <input type="text" name="term" size="30" id= "search" placeholder="Search Product"> 
 <!-- <input type="button" value="Search" id="searchBtn"> -->
 </form>
 <div class="product-data">
-{% include "products/product_list_data.html" %}
+    {% include "products/product_list_data.html" %}
 </div>
 <a href="{% url "product_new" %}", class="new-button">New</a>
 <div id="show-frm"></div>
@@ -82,29 +82,27 @@ $(document).ready(function() {
         e.preventDefault();
         q = $('#search').val();
         $.ajax({
-            type: 'POST',
+            type: 'GET',
             url: "/products/product_list_data",
             data: {
+                   'csrfmiddlewaretoken':$( "#csrfmiddlewaretoken").val(),
                    'term' :q
             },
             dataType: "html",
             success: function(response) {
-                console.log(response);
                 $(".product-data").html(response);
-            },
-            error: function(error){
-                alert("error");
-                return;
             }
         });
     });
+
     $("#next-page,#previous-page").live("click",function(){
         next_previous = $(this).attr("href");
         q = $('#search').val();
         $.ajax({
-            type: "POST",
+            type: "GET",
             url: "/products/product_list_data",
             data: {
+                   'csrfmiddlewaretoken':$( "#csrfmiddlewaretoken").val(),
                    'page' :next_previous,
                    'term' :q
             },
@@ -121,3 +119,4 @@ $(document).ready(function() {
     })
 });
 </script>
+{% endblock %}
