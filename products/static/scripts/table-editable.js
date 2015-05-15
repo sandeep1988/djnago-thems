@@ -129,6 +129,7 @@ var TableEditable = function () {
 
         table.on('click', '.delete', function (e) {
             e.preventDefault();
+            var test = true;
             if (confirm("Are you sure to delete this row ?") == false) {
                 return;
             }
@@ -141,18 +142,15 @@ var TableEditable = function () {
                        'csrfmiddlewaretoken':$( "#csrfmiddlewaretoken").val()
                 },
                 success: function(response) {
-                    alert("success");
-                    // var nRow = $(this).parents('tr')[0];
-                    // oTable.fnDeleteRow(nRow);
-                    console.log("everything worked!")
+                    alert("response");
                 },
                 error: function(error){
                     alert("error");
                     return;
                 }
             });
-                var nRow = $(this).parents('tr')[0];
-                oTable.fnDeleteRow(nRow);
+                    var nRow = $(this).parents('tr')[0];
+                    oTable.fnDeleteRow(nRow);
         });
 
         table.on('click', '.cancel', function (e) {
