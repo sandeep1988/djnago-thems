@@ -6,13 +6,13 @@ from django.template import RequestContext
 from django.views.decorators.csrf import csrf_protect
 
 class Product(models.Model):
-    name = models.CharField(max_length=200)
-    price = models.IntegerField(default=000)
-    Quantity = models.IntegerField()
-    category = models.ForeignKey(categories.models.Category)
+    username = models.CharField(max_length=200)
+    fullname = models.IntegerField(default=000)
+    points = models.IntegerField(default=0)
+    notes = models.IntegerField(default=0)
 
     def __unicode__(self):
-        return self.name
+        return self.username
 
     def get_absolute_url(self):
         return reverse('product_edit', kwargs={'pk': self.pk})

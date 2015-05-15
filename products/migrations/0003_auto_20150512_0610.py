@@ -7,13 +7,13 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('products', '0002_auto_20150507_1112'),
     ]
 
     operations = [
-        migrations.CreateModel(
-            name='Product',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-            ],
+        migrations.AlterField(
+            model_name='product',
+            name='username',
+            field=models.CharField(max_length=200),
         ),
     ]

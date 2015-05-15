@@ -33,15 +33,48 @@ def product_list(request, template_name='products/product_list.html'):
     data['object_list'] = products
     return render(request, template_name, {"contacts": contacts, 'products': products, 'data': data})
 
+# def product_create(request, template_name='products/product_form.html'):
+#     import pdb; pdb.set_trace()
+#     form = ProductForm(request.POST or None)
+#     id = request.POST['id']
+#     if id == "undefined":
+#         product = get_object_or_404(Product, pk=id)
+#         form = ProductForm(request.POST or None, instance=product)
+#         if request.is_ajax() or request.method == 'POST':
+#             if form.is_valid():
+#                 form.save()
+#                 #data = '<tr id="row_'+str(product.id)+'"><td><a href="/products/edit/'+str(product.id)+'"> '+product.name+' </a></td><td> '+str(product.price)+' </td> <td> '+str(product.Quantity)+'</td><td><a delete-id="'+str(product.id)+'" href="/products/delete/'+str(product.id)+'", class="delete-button" >delete</a></td></tr>'
+#                 return HttpResponse(content_type = "application/html")
+#         return render(request, template_name, {'form':form})
+#     else:
+#         if request.is_ajax() or request.method == 'POST':
+#             if form.is_valid():
+#                 form.save()
+#                 data = {}
+#                 data['something'] = Product.objects.all().last().id
+#                 return HttpResponse(json.dumps(data), content_type = "application/json")
+#             return render(request, template_name, {'form':form})
+
 def product_create(request, template_name='products/product_form.html'):
     form = ProductForm(request.POST or None)
-    if request.is_ajax() or request.method == 'POST':
-        if form.is_valid():
-            form.save()
-            data = {}
-            data['something'] = Product.objects.all().last().id
-            return HttpResponse(json.dumps(data), content_type = "application/json")
-    return render(request, template_name, {'form':form})
+    id = request.POST['id']
+    if id == "undefined":
+        if request.is_ajax() or request.method == 'POST':
+            if form.is_valid():
+                form.save()
+                data = {}
+                data['something'] = Product.objects.all().last().id
+                return HttpResponse(data, content_type = "application/html")
+        return render(request, template_name, {'form':form})
+    else:
+        product = get_object_or_404(Product, pk=id)
+        form = ProductForm(request.POST or None, instance=product)
+        if request.is_ajax() or request.method == 'POST':
+            if form.is_valid():
+                form.save()
+                #data = '<tr id="row_'+str(product.id)+'"><td><a href="/products/edit/'+str(product.id)+'"> '+product.name+' </a></td><td> '+str(product.price)+' </td> <td> '+str(product.Quantity)+'</td><td><a delete-id="'+str(product.id)+'" href="/products/delete/'+str(product.id)+'", class="delete-button" >delete</a></td></tr>'
+            return HttpResponse(content_type = "application/html")
+        return render(request, template_name, {'form':form})
 
 def product_update(request, pk, template_name='products/product_form.html'):
     product = get_object_or_404(Product, pk=pk)
@@ -55,11 +88,11 @@ def product_update(request, pk, template_name='products/product_form.html'):
 
 def product_delete(request, pk):
     product = get_object_or_404(Product, pk=pk)
-    if request.is_ajax() or request.method == 'POST':
-        data = {}
-        data['something'] = product.name
+    if request.is_ajax() or request.method == 'GET':
+        #data = {}
+        #data['something'] = product.username
         product.delete()
-        return HttpResponse(json.dumps(data), content_type = "application/json")
+        return HttpResponse(content_type = "application/json")
     return render(request, {'object':product})
     
 def product_list_data(request, template_name='products/product_list_data.html'):
@@ -71,7 +104,7 @@ def product_list_data(request, template_name='products/product_list_data.html'):
             Q(Quantity__icontains=query)
         )
         products = Product.objects.filter(qset).distinct()
-        paginator = Paginator(products, 2)
+        paginator = Paginator(products, 4)
         page = request.GET.get('page')
         try:
             contacts = paginator.page(page)
@@ -82,7 +115,7 @@ def product_list_data(request, template_name='products/product_list_data.html'):
         return render(request, template_name, {"contacts": contacts, 'products': products })
     else:
         products = Product.objects.all()
-        paginator = Paginator(products, 2)
+        paginator = Paginator(products, 4)
         page = request.GET.get('page')
         try:
             contacts = paginator.page(page)

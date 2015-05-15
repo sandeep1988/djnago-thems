@@ -1,37 +1,75 @@
 {% block content %}
 {% load static %}
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
-<script type="text/javascript" src="{% static 'js/product.js'%}"></script>
-<table id ="tab-list">
+<script src="{% static 'js/product.js'%}"></script>
+<form method="post" onsubmit="return false" id="add-product-form">
+    {% csrf_token %}
+<div class="table-toolbar">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="btn-group">
+                    <button id="sample_editable_1_new" class="btn green">
+                    Add New <i class="fa fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="btn-group pull-right">
+                    <button class="btn dropdown-toggle" data-toggle="dropdown">Tools <i class="fa fa-angle-down"></i>
+                    </button>
+                    <ul class="dropdown-menu pull-right">
+                        <li>
+                            <a href="#">
+                            Print </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                            Save as PDF </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                            Export to Excel </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+</div>
+<table class="table table-striped table-hover table-bordered" id="sample_editable_1">
+    <thead>
     <tr>
-    <th>Name</th>
-    <th>Price</th>
-    <th>Quantity</th>
-    <th colspan="3"></th>
-  </tr>
+        <th>
+             Username
+        </th>
+        <th>
+             Full Name
+        </th>
+        <th>
+             Points
+        </th>
+        <th>
+             Notes
+        </th>
+        <th>
+             Edit
+        </th>
+        <th>
+             Delete
+        </th>
+    </tr>
+    </thead>
+    <tbody>
     {% for product in contacts %}
-    <tr id="row_{{ product.id }}">
-        <td><a href="{% url "product_edit" product.id %}", class="edit-button" edit-id="{{ product.id }}" >{{ product.name }} </a></td>
-        <td id= "row_price_{{product.price}}">{{ product.price }}</td>
-        <td id= "row_quantity_{{product.Quantity}}">{{ product.Quantity }}</td>
-    <td><a href="{% url 'product_delete' product.id %}", class="delete-button" delete-id="{{ product.id }}" >delete</a></td>
+    <tr>
+        <td>{{ product.username }} </td>
+        <td>{{ product.fullname }} </td>
+        <td>{{ product.points }} </td>
+        <td>{{ product.notes }} </td>
+        <td><a href="{% url "product_edit" product.id %}" class="edit" href="javascript:;" edit-id="{{ product.id }}">Edit</a></td>
+        <td><a href="{% url 'product_delete' product.id %}" class="delete" href="javascript:;" delete-id="{{ product.id }}">delete</a></td>
     </tr>
     {% endfor %}
+     </tbody>
 </table>
-
-<div class="pagination">
-    <span class="step-links">
-        {% if contacts.has_previous %}
-            <a href="{{ contacts.previous_page_number }}" id="previous-page">previous</a>
-        {% endif %}
-
-        <span class="current">
-            Page {{ contacts.number }} of {{ contacts.paginator.num_pages }}.
-        </span>
-
-        {% if contacts.has_next %}
-            <a href="{{ contacts.next_page_number }}" id="next-page">next</a>
-        {% endif %}
-    </span>
-</div>
+</form>
 {% endblock %}

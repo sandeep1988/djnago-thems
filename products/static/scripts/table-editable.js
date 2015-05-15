@@ -13,19 +13,35 @@ var TableEditable = function () {
             oTable.fnDraw();
         }
 
-        function editRow(oTable, nRow) {
+        function editRow(oTable, nRow, edit_id) {
             var aData = oTable.fnGetData(nRow);
             var jqTds = $('>td', nRow);
-            jqTds[0].innerHTML = '<input type="text" class="form-control input-small" value="' + aData[0] + '">';
-            jqTds[1].innerHTML = '<input type="text" class="form-control input-small" value="' + aData[1] + '">';
-            jqTds[2].innerHTML = '<input type="text" class="form-control input-small" value="' + aData[2] + '">';
-            jqTds[3].innerHTML = '<input type="text" class="form-control input-small" value="' + aData[3] + '">';
+            jqTds[0].innerHTML = '<input type="text" name = "username" class="form-control input-small" value="' + aData[0] + '">';
+            jqTds[1].innerHTML = '<input type="text" name = "fullname" class="form-control input-small" value="' + aData[1] + '">';
+            jqTds[2].innerHTML = '<input type="text" name = "points" class="form-control input-small" value="' + aData[2] + '">';
+            jqTds[3].innerHTML = '<input type="text" name = "notes" class="form-control input-small" value="' + aData[3] + '">';
             jqTds[4].innerHTML = '<a class="edit" href="">Save</a>';
-            jqTds[5].innerHTML = '<a class="cancel" href="">Cancel</a>';
+            jqTds[5].innerHTML = '<a class="cancel" href="">Cancel</a><input type="hidden" name = "id" class="form-control input-small" value="' + edit_id + '">';
         }
 
         function saveRow(oTable, nRow) {
+        var serializedData = $('#add-product-form').serialize();
+        $.ajax({
+            type: "POST",
+            url: "/products/new",
+            data: serializedData,
+            dataType: "html",
+            success: function(response) {
+                console.log(response);
+                prodId = response.something;
+            },
+            error: function(error){
+                alert("error");
+                return;
+            }
+        });
             var jqInputs = $('input', nRow);
+            alert("jqInputs");
             oTable.fnUpdate(jqInputs[0].value, nRow, 0, false);
             oTable.fnUpdate(jqInputs[1].value, nRow, 1, false);
             oTable.fnUpdate(jqInputs[2].value, nRow, 2, false);
@@ -113,14 +129,30 @@ var TableEditable = function () {
 
         table.on('click', '.delete', function (e) {
             e.preventDefault();
-
             if (confirm("Are you sure to delete this row ?") == false) {
                 return;
             }
-
-            var nRow = $(this).parents('tr')[0];
-            oTable.fnDeleteRow(nRow);
-            alert("Deleted! Do not forget to do some ajax to sync with backend :)");
+            deleted_id = $(this).attr('delete-id');
+            $.ajax({
+                type: "GET",
+                url: $(this).attr('href'),
+                dataType: "json",
+                data: {
+                       'csrfmiddlewaretoken':$( "#csrfmiddlewaretoken").val()
+                },
+                success: function(response) {
+                    alert("success");
+                    // var nRow = $(this).parents('tr')[0];
+                    // oTable.fnDeleteRow(nRow);
+                    console.log("everything worked!")
+                },
+                error: function(error){
+                    alert("error");
+                    return;
+                }
+            });
+                var nRow = $(this).parents('tr')[0];
+                oTable.fnDeleteRow(nRow);
         });
 
         table.on('click', '.cancel', function (e) {
@@ -137,10 +169,9 @@ var TableEditable = function () {
 
         table.on('click', '.edit', function (e) {
             e.preventDefault();
-
+            edit_id = $(this).attr('edit-id');
             /* Get the row as a parent of the link that was clicked on */
             var nRow = $(this).parents('tr')[0];
-
             if (nEditing !== null && nEditing != nRow) {
                 /* Currently editing - but not this row - restore the old before continuing to edit mode */
                 restoreRow(oTable, nEditing);
@@ -153,7 +184,7 @@ var TableEditable = function () {
                 alert("Updated! Do not forget to do some ajax to sync with backend :)");
             } else {
                 /* No edit in progress - let's start one */
-                editRow(oTable, nRow);
+                editRow(oTable, nRow, edit_id);
                 nEditing = nRow;
             }
         });
