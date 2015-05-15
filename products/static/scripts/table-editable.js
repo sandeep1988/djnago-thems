@@ -41,7 +41,6 @@ var TableEditable = function () {
             }
         });
             var jqInputs = $('input', nRow);
-            alert("jqInputs");
             oTable.fnUpdate(jqInputs[0].value, nRow, 0, false);
             oTable.fnUpdate(jqInputs[1].value, nRow, 1, false);
             oTable.fnUpdate(jqInputs[2].value, nRow, 2, false);
@@ -142,7 +141,6 @@ var TableEditable = function () {
                        'csrfmiddlewaretoken':$( "#csrfmiddlewaretoken").val()
                 },
                 success: function(response) {
-                    alert("response");
                 },
                 error: function(error){
                     alert("error");

@@ -20,7 +20,8 @@ class ProductForm(ModelForm):
 
 def product_list(request, template_name='products/product_list.html'):
     products = Product.objects.all()
-    paginator = Paginator(products, 10000)
+    count = products.count()
+    paginator = Paginator(products, count)
     page = request.GET.get('page')
     try:
         contacts = paginator.page(page)
