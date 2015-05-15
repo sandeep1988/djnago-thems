@@ -19,9 +19,8 @@ class ProductForm(ModelForm):
         fields = "__all__"
 
 def product_list(request, template_name='products/product_list.html'):
-    #import pdb; pdb.set_trace()
     products = Product.objects.all()
-    paginator = Paginator(products, 5)
+    paginator = Paginator(products, 10000)
     page = request.GET.get('page')
     try:
         contacts = paginator.page(page)
